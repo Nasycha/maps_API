@@ -1,12 +1,16 @@
 import os
 import sys
 
-import requests
-from  PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 
+import requestMaking
+
 SCREEN_SIZE = [600, 450]
+ZOOM = 2
+TYPE = 'map'
+COORDS = '37.530887 55.703118'
 
 
 class Example(QWidget):
@@ -16,14 +20,7 @@ class Example(QWidget):
         self.initUI()
 
     def getImage(self):
-        map_request = "http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=0.002,0.002&l=map"
-        response = requests.get(map_request)
-
-        if not response:
-            print("Ошибка выполнения запроса:")
-            print(map_request)
-            print("Http статус:", response.status_code, "(", response.reason, ")")
-            sys.exit(1)
+        response = requestMaking.Make_Map_Request(COORDS.split(), ZOOM, TYPE)
 
         # Запишем полученное изображение в файл.
         self.map_file = "map.png"
@@ -34,7 +31,7 @@ class Example(QWidget):
         self.setGeometry(100, 100, *SCREEN_SIZE)
         self.setWindowTitle('Отображение карты')
 
-        ## Изображение
+        # Изображение
         self.pixmap = QPixmap(self.map_file)
         self.image = QLabel(self)
         self.image.move(0, 0)
@@ -46,8 +43,19 @@ class Example(QWidget):
         os.remove(self.map_file)
 
     def keyPressEvent(self, e):
-        if e.key() == Qt.Key_PageUp:
-            self.close()
+        global ZOOM
+        if e.key() == Qt.Key_PageUp and ZOOM < 17:
+            ZOOM += 1
+        elif e.key() == Qt.Key_PageDown and ZOOM > 2:
+            ZOOM -= 1
+        self.update()
+
+    def update(self):
+        self.getImage()
+        self.pixmap = QPixmap(self.map_file)
+        self.image.move(0, 0)
+        self.image.resize(600, 450)
+        self.image.setPixmap(self.pixmap)
 
 
 if __name__ == '__main__':
