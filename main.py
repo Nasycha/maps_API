@@ -2,7 +2,7 @@ import os
 import sys
 
 import requests
-from PyQt5.QtCore import Qt
+from  PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 
@@ -12,24 +12,17 @@ SCREEN_SIZE = [600, 450]
 class Example(QWidget):
     def __init__(self):
         super().__init__()
-        self.staric_api_server = "http://static-maps.yandex.ru/1.x/"
-        self.lon = 37.530887
-        self.lat = 55.703118
-        self.delta = 0.002
-        self.static_params = {
-            "ll": f'{self.lon},{self.lat}',
-            "spn": f'{self.delta},{self.delta}',
-            "l": "map"
-        }
         self.getImage()
         self.initUI()
 
     def getImage(self):
-        response = requests.get(self.staric_api_server, params=self.static_params)
+        map_request = "http://static-maps.yandex.ru/1.x/?ll=37.530887,55.703118&spn=0.002,0.002&l=map"
+        response = requests.get(map_request)
 
         if not response:
-            print('Ошибка')
-            print()
+            print("Ошибка выполнения запроса:")
+            print(map_request)
+            print("Http статус:", response.status_code, "(", response.reason, ")")
             sys.exit(1)
 
         # Запишем полученное изображение в файл.
@@ -41,7 +34,7 @@ class Example(QWidget):
         self.setGeometry(100, 100, *SCREEN_SIZE)
         self.setWindowTitle('Отображение карты')
 
-        # Изображение
+        ## Изображение
         self.pixmap = QPixmap(self.map_file)
         self.image = QLabel(self)
         self.image.move(0, 0)
@@ -53,77 +46,9 @@ class Example(QWidget):
         os.remove(self.map_file)
 
     def keyPressEvent(self, e):
-        if e.key() == Qt.Key_Up:
-            self.move_top()
-        elif e.key() == Qt.Key_Down:
-            self.move_button()
-        elif e.key() == Qt.Key_Left:
-            self.move_left()
-        else:
-            self.move_right()
+        if e.key() == Qt.Key_PageUp:
+            self.close()
 
-    def move_top(self):
-        try:
-            self.lat += self.delta
-            self.static_params = {
-                "ll": f'{self.lon},{self.lat}',
-                "spn": f'{self.delta},{self.delta}',
-                "l": "map"
-            }
-            self.getImage()
-            self.pixmap = QPixmap(self.map_file)
-            self.image.setPixmap(self.pixmap)
-        except Exception:
-            pass
-
-    def move_button(self):
-        try:
-            self.lat -= self.delta
-            self.static_params = {
-                "ll": f'{self.lon},{self.lat}',
-                "spn": f'{self.delta},{self.delta}',
-                "l": "map"
-            }
-            self.getImage()
-            self.pixmap = QPixmap(self.map_file)
-            self.image.setPixmap(self.pixmap)
-        except Exception:
-            pass
-
-    def move_left(self):
-        try:
-            self.lon -= self.delta
-            self.static_params = {
-                "ll": f'{self.lon},{self.lat}',
-                "spn": f'{self.delta},{self.delta}',
-                "l": "map"
-            }
-            self.getImage()
-            self.pixmap = QPixmap(self.map_file)
-            self.image.setPixmap(self.pixmap)
-        except Exception:
-            pass
-
-    def move_right(self):
-        try:
-            self.lon += self.delta
-            self.static_params = {
-                "ll": f'{self.lon},{self.lat}',
-                "spn": f'{self.delta},{self.delta}',
-                "l": "map"
-            }
-            self.getImage()
-            self.pixmap = QPixmap(self.map_file)
-            self.image.setPixmap(self.pixmap)
-        except Exception:
-            pass
-
-
-def except_hook(cls, exception, traceback):
-    sys.__excepthook__(cls, exception, traceback)
-
-
-sys.excepthook = except_hook
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
