@@ -2,6 +2,7 @@ import os
 import sys
 
 import requests
+from  PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 
@@ -43,6 +44,10 @@ class Example(QWidget):
     def closeEvent(self, event):
         """При закрытии формы подчищаем за собой"""
         os.remove(self.map_file)
+
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_PageUp:
+            self.close()
 
 
 if __name__ == '__main__':
