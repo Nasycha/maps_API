@@ -4,7 +4,7 @@ import sys
 import requests
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton
 
 SCREEN_SIZE = [600, 450]
 
@@ -16,12 +16,13 @@ class Example(QWidget):
         self.lon = 37.530887
         self.lat = 55.703118
         self.delta = 0.002
+        self.type_of_source = 'map'
+        self.cur = 0
         self.static_params = {
             "ll": f'{self.lon},{self.lat}',
             "spn": f'{self.delta},{self.delta}',
-            "l": "map"
+            "l": self.type_of_source
         }
-        self.getImage()
         self.initUI()
 
     def getImage(self):
@@ -36,21 +37,42 @@ class Example(QWidget):
         self.map_file = "map.png"
         with open(self.map_file, "wb") as file:
             file.write(response.content)
+        self.pixmap = QPixmap(self.map_file)
+        self.image.setPixmap(self.pixmap)
 
     def initUI(self):
         self.setGeometry(100, 100, *SCREEN_SIZE)
         self.setWindowTitle('Отображение карты')
 
         # Изображение
-        self.pixmap = QPixmap(self.map_file)
+
         self.image = QLabel(self)
+        self.getImage()
+        self.pixmap = QPixmap(self.map_file)
         self.image.move(0, 0)
         self.image.resize(600, 450)
         self.image.setPixmap(self.pixmap)
 
+        self.map_button = QPushButton("следущий слой", self)
+
+        self.map_button.move(500, 0)
+
+        self.map_button.clicked.connect(self.change_to_map)
+
     def closeEvent(self, event):
         """При закрытии формы подчищаем за собой"""
         os.remove(self.map_file)
+
+    def change_to_map(self):
+        b = ['map', 'sat', 'sat,skl']  # список с режимами
+        self.cur = (self.cur + 1) % 3  # текущий слой
+        self.type_of_source = b[self.cur]
+        self.static_params = {
+            "ll": f'{self.lon},{self.lat}',
+            "spn": f'{self.delta},{self.delta}',
+            "l": self.type_of_source
+        }
+        self.getImage()
 
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_Up:
@@ -73,11 +95,9 @@ class Example(QWidget):
                 self.static_params = {
                     "ll": f'{self.lon},{self.lat}',
                     "spn": f'{self.delta},{self.delta}',
-                    "l": "map"
+                    "l": self.type_of_source
                 }
                 self.getImage()
-                self.pixmap = QPixmap(self.map_file)
-                self.image.setPixmap(self.pixmap)
 
         except Exception:
             pass
@@ -88,11 +108,10 @@ class Example(QWidget):
             self.static_params = {
                 "ll": f'{self.lon},{self.lat}',
                 "spn": f'{self.delta},{self.delta}',
-                "l": "map"
+                "l": self.type_of_source
             }
             self.getImage()
-            self.pixmap = QPixmap(self.map_file)
-            self.image.setPixmap(self.pixmap)
+
 
         except Exception:
             pass
@@ -103,11 +122,9 @@ class Example(QWidget):
             self.static_params = {
                 "ll": f'{self.lon},{self.lat}',
                 "spn": f'{self.delta},{self.delta}',
-                "l": "map"
+                "l": self.type_of_source
             }
             self.getImage()
-            self.pixmap = QPixmap(self.map_file)
-            self.image.setPixmap(self.pixmap)
         except Exception:
             pass
 
@@ -117,11 +134,9 @@ class Example(QWidget):
             self.static_params = {
                 "ll": f'{self.lon},{self.lat}',
                 "spn": f'{self.delta},{self.delta}',
-                "l": "map"
+                "l": self.type_of_source
             }
             self.getImage()
-            self.pixmap = QPixmap(self.map_file)
-            self.image.setPixmap(self.pixmap)
         except Exception:
             pass
 
@@ -131,11 +146,9 @@ class Example(QWidget):
             self.static_params = {
                 "ll": f'{self.lon},{self.lat}',
                 "spn": f'{self.delta},{self.delta}',
-                "l": "map"
+                "l": self.type_of_source
             }
             self.getImage()
-            self.pixmap = QPixmap(self.map_file)
-            self.image.setPixmap(self.pixmap)
         except Exception:
             pass
 
@@ -145,11 +158,9 @@ class Example(QWidget):
             self.static_params = {
                 "ll": f'{self.lon},{self.lat}',
                 "spn": f'{self.delta},{self.delta}',
-                "l": "map"
+                "l": self.type_of_source
             }
             self.getImage()
-            self.pixmap = QPixmap(self.map_file)
-            self.image.setPixmap(self.pixmap)
         except Exception:
             pass
 
