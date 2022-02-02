@@ -4,7 +4,7 @@ import sys
 import requests
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QInputDialog
 
 SCREEN_SIZE = [600, 450]
 
@@ -57,6 +57,8 @@ class Example(QWidget):
 
         self.map_button.move(500, 0)
 
+        self.search_field = QPushButton('Поиск', self)
+        self.search_field.clicked.connect(self.search_in)
         self.map_button.clicked.connect(self.change_to_map)
 
     def closeEvent(self, event):
@@ -73,6 +75,12 @@ class Example(QWidget):
             "l": self.type_of_source
         }
         self.getImage()
+
+    def search_in(self):
+        self.org_name, ok_pressed = QInputDialog.getText(self, "Введите запрос", "Введите название организации")
+        if ok_pressed:
+            self.search()
+
 
     def keyPressEvent(self, e):
         if e.key() == Qt.Key_W:
@@ -127,6 +135,18 @@ class Example(QWidget):
             self.getImage()
         except Exception:
             pass
+
+    def search(self):
+        response = requests.get(
+            f'https://geocode-maps.yandex.ru/1.x/?apikey=40d1649f-0493-4b70-98ba-98533de7710b&geocode={self.org_name},%201&format=json').json()
+        cords = response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"]
+        self.lon, self.lat = cords.split(" ")
+        self.static_params = {
+            "ll": f'{self.lon},{self.lat}',
+            "spn": f'{self.delta},{self.delta}',
+            "l": self.type_of_source
+        }
+        self.getImage()
 
     def move_button(self):
         try:
