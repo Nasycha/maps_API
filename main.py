@@ -75,13 +75,13 @@ class Example(QWidget):
         self.getImage()
 
     def keyPressEvent(self, e):
-        if e.key() == Qt.Key_Up:
+        if e.key() == Qt.Key_W:
             self.move_top()
-        elif e.key() == Qt.Key_Down:
+        elif e.key() == Qt.Key_S:
             self.move_button()
-        elif e.key() == Qt.Key_Left:
+        elif e.key() == Qt.Key_A:
             self.move_left()
-        elif e.key() == Qt.Key_Right:
+        elif e.key() == Qt.Key_D:
             self.move_right()
         elif e.key() == Qt.Key_PageUp:
             self.zoom()
