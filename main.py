@@ -142,9 +142,8 @@ class Example(QWidget):
         cords = response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"]
         self.lon, self.lat = cords.split(" ")
         self.static_params = {
-            "ll": f'{self.lon},{self.lat}',
-            "spn": f'{self.delta},{self.delta}',
-            "l": self.type_of_source
+            "l": self.type_of_source,
+            "pt": f'{self.lon},{self.lat},pm2rdm'
         }
         self.getImage()
 
@@ -178,7 +177,7 @@ class Example(QWidget):
             self.static_params = {
                 "ll": f'{self.lon},{self.lat}',
                 "spn": f'{self.delta},{self.delta}',
-                "l": self.type_of_source
+                "l": self.type_of_source,
             }
             self.getImage()
         except Exception:
